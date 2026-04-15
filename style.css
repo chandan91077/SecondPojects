@@ -627,3 +627,22 @@ h3 {
 .floating-btn.call:hover {
   background-color: #0056b3;
 }
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-img {
+    width: 45px;   /* adjust this */
+    height: 45px;
+    object-fit: contain;
+    border-radius: 12px; /* matches your rounded logo look */
+}
+
+/* Optional: text styling */
+.logo span {
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 1.1;
+}
