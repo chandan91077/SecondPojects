@@ -1,13 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
     const countdownEl = document.getElementById('countdown');
+    const closeBtn = document.getElementById('success-close-btn');
     const redirectUrl = 'index.html#book-now';
     let remaining = 5;
+    let timer;
+
+    function redirectNow() {
+        if (timer) {
+            clearInterval(timer);
+        }
+        window.location.href = redirectUrl;
+    }
 
     if (countdownEl) {
         countdownEl.textContent = String(remaining);
     }
 
-    const timer = setInterval(() => {
+    timer = setInterval(() => {
         remaining -= 1;
 
         if (countdownEl) {
@@ -15,8 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (remaining <= 0) {
-            clearInterval(timer);
-            window.location.href = redirectUrl;
+            redirectNow();
         }
     }, 1000);
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', redirectNow);
+    }
 });
