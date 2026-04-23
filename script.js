@@ -64,11 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. Form Submission & Client-Side Validation
     const bookingForm = document.getElementById('booking-form');
-    const successBox = document.getElementById('success-box');
     const submitBtn = document.getElementById('submit-btn');
     const btnText = submitBtn?.querySelector('.btn-text');
     const submitSpinner = document.getElementById('submit-spinner');
-    const resetFormBtn = document.getElementById('reset-form-btn');
 
     if (bookingForm) {
         bookingForm.addEventListener('submit', async (e) => {
@@ -114,9 +112,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (response.ok) {
-                    // Show success
-                    bookingForm.classList.add('d-none');
-                    successBox.classList.remove('d-none');
+                    // Move to dedicated success page with countdown flow
+                    window.location.href = 'success.html';
                 } else {
                     let errorMessage = 'Something went wrong.';
                     const responseText = await response.text();
@@ -145,13 +142,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Reset Form
-    if (resetFormBtn) {
-        resetFormBtn.addEventListener('click', () => {
-            bookingForm.reset();
-            calcResult.textContent = '₹ 0';
-            successBox.classList.add('d-none');
-            bookingForm.classList.remove('d-none');
-        });
-    }
 });
