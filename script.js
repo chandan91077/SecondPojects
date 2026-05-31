@@ -45,9 +45,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function calculateCost() {
         if (!calcService.value) return;
-        
         const basePrice = parseFloat(calcService.options[calcService.selectedIndex].dataset.price);
-        const multiplier = parseFloat(calcType.options[calcType.selectedIndex].dataset.multiplier);
+        // For AC-specific services we use the unit type multiplier; for appliance repairs ignore it
+        const acServiceValues = ['installation', 'cleaning', 'gas'];
+        let multiplier = 1;
+        if (acServiceValues.includes(calcService.value)) {
+            multiplier = parseFloat(calcType.options[calcType.selectedIndex].dataset.multiplier) || 1;
+            // ensure unit type selector is visible
+            calcType.parentElement.style.display = '';
+        } else {
+            // hide unit type selector for appliance repairs / generic repair
+            calcType.parentElement.style.display = 'none';
+        }
+
         const count = parseInt(calcCount.value) || 1;
 
         const totalCost = basePrice * multiplier * count;
@@ -60,6 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
         calcService.addEventListener('change', calculateCost);
         calcType.addEventListener('change', calculateCost);
         calcCount.addEventListener('input', calculateCost);
+        // initialize display
+        calculateCost();
     }
 
     // 4. Form Submission & Client-Side Validation

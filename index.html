@@ -116,6 +116,7 @@
             <div class="trust-badges mt-4">
                 <span><i class="fa-solid fa-check-circle"></i> Certified Techs</span>
                 <span><i class="fa-solid fa-check-circle"></i> 100% Satisfaction</span>
+                <span><i class="fa-solid fa-tools"></i> Also repair Freezers & Washing Machines</span>
             </div>
         </div>
     </section>
@@ -128,26 +129,38 @@
                 <p>Comprehensive cooling solutions tailored to your needs.</p>
             </div>
             <div class="grid services-grid">
-                <!-- Card 1 -->
+                <!-- Card 1: Freezer Repair (moved to top) -->
                 <div class="service-card glass-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="icon-wrapper"><i class="fa-solid fa-snowflake"></i></div>
+                    <h3>Freezer Repair</h3>
+                    <p>Quick diagnosis and repair for chest and upright freezers — preserving your food and peace of mind.</p>
+                </div>
+                <!-- Card 2: Washing Machine Repair (moved to top) -->
+                <div class="service-card glass-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="icon-wrapper"><i class="fa-solid fa-washer"></i></div>
+                    <h3>Washing Machine Repair</h3>
+                    <p>Fixes for front-load and top-load machines — spinning issues, leaks, and electrical faults handled.</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="service-card glass-card" data-aos="fade-up" data-aos-delay="300">
                     <div class="icon-wrapper"><i class="fa-solid fa-screwdriver-wrench"></i></div>
                     <h3>AC Installation</h3>
                     <p>Professional installation for split and window units ensuring perfect fitting and optimal performance.</p>
                 </div>
-                <!-- Card 2 -->
-                <div class="service-card glass-card" data-aos="fade-up" data-aos-delay="200">
+                <!-- Card 4 -->
+                <div class="service-card glass-card" data-aos="fade-up" data-aos-delay="400">
                     <div class="icon-wrapper"><i class="fa-solid fa-gas-pump"></i></div>
                     <h3>Gas Refilling</h3>
                     <p>Accurate refrigerant recharge to boost your cooling efficiency and save on energy bills.</p>
                 </div>
-                <!-- Card 3 -->
-                <div class="service-card glass-card" data-aos="fade-up" data-aos-delay="300">
+                <!-- Card 5 -->
+                <div class="service-card glass-card" data-aos="fade-up" data-aos-delay="500">
                     <div class="icon-wrapper"><i class="fa-solid fa-spray-can-sparkles"></i></div>
                     <h3>Deep Cleaning</h3>
                     <p>Thorough foaming wash of condenser and evaporator coils to eliminate dust, mold, and odors.</p>
                 </div>
-                <!-- Card 4 -->
-                <div class="service-card glass-card" data-aos="fade-up" data-aos-delay="400">
+                <!-- Card 6 -->
+                <div class="service-card glass-card" data-aos="fade-up" data-aos-delay="600">
                     <div class="icon-wrapper"><i class="fa-solid fa-clock"></i></div>
                     <h3>24/7 Emergency Repair</h3>
                     <p>AC broke down at midnight? We’re always ready to restore your comfort, day or night.</p>
@@ -195,6 +208,8 @@
                     <label for="calc-service">Service Type</label>
                     <select id="calc-service" required>
                         <option value="" disabled selected>Select a Service...</option>
+                        <option value="freezer_repair" data-price="1200">Freezer Repair</option>
+                        <option value="washing_repair" data-price="1000">Washing Machine Repair</option>
                         <option value="installation" data-price="1500">AC Installation</option>
                         <option value="cleaning" data-price="499">Deep Cleaning</option>
                         <option value="gas" data-price="2500">Gas Refill</option>
@@ -280,6 +295,8 @@
                             <label for="serviceType">Service Type</label>
                             <select id="serviceType" name="serviceType" required>
                                 <option value="" disabled selected>Select Service</option>
+                                <option value="Freezer Repair">Freezer Repair</option>
+                                <option value="Washing Machine Repair">Washing Machine Repair</option>
                                 <option value="AC Installation">AC Installation</option>
                                 <option value="Gas Refilling">Gas Refilling</option>
                                 <option value="Deep Cleaning">Deep Cleaning</option>
