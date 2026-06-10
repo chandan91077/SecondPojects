@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Bill Generator | Advanced AC Repair</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome setup -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Core CSS (for navbar and variables) -->
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* Admin specific layouts */
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-main {
+            flex: 1;
+            padding-top: 100px;
+            padding-bottom: 50px;
+        }
+
+        /* Login Layout */
+        .login-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(13, 71, 161, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            text-align: center;
+        }
+
+        .login-card h2 {
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .login-card p {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .form-control-icon {
+            position: relative;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-control-icon label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--deep-navy);
+        }
+
+        .form-control-icon input {
+            width: 100%;
+            padding: 14px 14px 14px 45px;
+            border: 1px solid rgba(13, 71, 161, 0.2);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-control-icon input:focus {
+            border-color: var(--deep-navy);
+            box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1);
+        }
+
+        .form-control-icon i {
+            position: absolute;
+            left: 16px;
+            bottom: 16px;
+            color: var(--navy-light);
+            font-size: 1.1rem;
+        }
+
+        /* Dashboard and Tabs styling */
+        .dashboard-container {
+            display: none; /* Controlled by JS */
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid rgba(13, 71, 161, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 20px;
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .tab-btn:hover {
+            color: var(--deep-navy);
+        }
+
+        .tab-btn.active {
+            color: var(--deep-navy);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--deep-navy);
+            border-radius: 10px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Form Design styling */
+        .bill-form-card {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(13, 71, 161, 0.04);
+            padding: 40px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .form-section-title {
+            color: var(--deep-navy);
+            font-weight: 800;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent-cyan);
+            padding-left: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: var(--deep-navy);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(13, 71, 161, 0.2);
+            border-radius: 10px;
+            background: #ffffff;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--deep-navy);
+            box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1);
+        }
+
+        .custom-service-group {
+            display: none;
+            margin-top: 10px;
+        }
+
+        /* Delivery Preference Checkboxes */
+        .delivery-preferences {
+            background: rgba(13, 71, 161, 0.04);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(13, 71, 161, 0.1);
+            margin-top: 10px;
+        }
+
+        .delivery-label {
+            font-weight: 700;
+            color: var(--deep-navy);
+            margin-bottom: 12px;
+            display: block;
+            font-size: 0.95rem;
+        }
+
+        .delivery-options-grid {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .checkbox-container input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* History Tab Grid */
+        .history-controls {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 16px;
+            padding: 15px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 16px 10px 38px;
+            border-radius: 50px;
+            border: 1px solid rgba(13, 71, 161, 0.15);
+            background: #ffffff;
+            outline: none;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 14px;
+            top: 13px;
+            color: var(--text-muted);
+        }
+
+        .history-table-container {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(13, 71, 161, 0.02);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(13, 71, 161, 0.05);
+            padding: 16px 20px;
+            font-weight: 700;
+            color: var(--deep-navy);
+            border-bottom: 1px solid rgba(13, 71, 161, 0.1);
+            font-size: 0.95rem;
+        }
+
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(13, 71, 161, 0.05);
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: rgba(13, 71, 161, 0.01);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge.paid { background: #dcfce7; color: #15803d; }
+        .badge.pending { background: #fee2e2; color: #b91c1c; }
+
+        .btn-action-group {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .action-icon-btn {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            transition: background 0.2s;
+        }
+
+        .action-icon-btn.view { color: var(--navy-light); }
+        .action-icon-btn.view:hover { background: #eff6ff; }
+        .action-icon-btn.delete { color: #dc2626; }
+        .action-icon-btn.delete:hover { background: #fee2e2; }
+
+        .error-banner, .success-banner {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: none;
+            text-align: left;
+        }
+
+        .error-banner { background: #fee2e2; color: #b91c1c; border: 1px solid rgba(185, 28, 28, 0.1); }
+        .success-banner { background: #dcfce7; color: #15803d; border: 1px solid rgba(21, 128, 61, 0.1); }
+
+        /* Print styling logic */
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .bill-form-card {
+                padding: 24px;
+            }
+            td, th {
+                padding: 12px;
+                font-size: 0.85rem;
+            }
+            .history-table-container {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="navbar glass">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <img src="favicon.svg" alt="Advanced AC Logo" class="logo-img"> Advanced AC
+            </a>
+            <nav class="nav-links">
+                <span class="text-highlight font-bold" id="admin-user-tag" style="display:none; font-weight:700; align-self:center;">Admin Portal</span>
+            </nav>
+            <div class="nav-actions">
+                <a href="tel:+919005341723" class="phone-link"><i class="fa-solid fa-phone"></i> <span>9005 341 723</span></a>
+                <button id="logout-btn" class="btn btn-outline" style="display:none; padding: 8px 20px; font-size: 0.9rem; border-radius: 50px;">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <div class="container">
+            
+            <!-- 1. LOGIN SECTION -->
+            <div class="login-wrapper" id="login-section">
+                <div class="login-card">
+                    <h2>Admin Portal</h2>
+                    <p>Enter credentials to access the invoice system</p>
+                    
+                    <div class="error-banner" id="login-error"></div>
+                    
+                    <form id="login-form">
+                        <div class="form-control-icon">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" required placeholder="Enter username" autocomplete="username">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="form-control-icon">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" required placeholder="Enter password" autocomplete="current-password">
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-full mt-3" id="login-submit-btn">
+                            <span class="btn-text">Sign In</span>
+                            <div class="spinner d-none" id="login-spinner"></div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 2. DASHBOARD SECTION -->
+            <div class="dashboard-container" id="dashboard-section">
+                <div class="admin-tabs">
+                    <button class="tab-btn active" data-tab="create-bill">Create Invoice</button>
+                    <button class="tab-btn" data-tab="history">Invoice History</button>
+                </div>
+
+                <!-- Create Bill Tab -->
+                <div class="tab-content active" id="create-bill-tab">
+                    <div class="bill-form-card">
+                        <div class="form-section-title">Billing details</div>
+                        
+                        <div class="error-banner" id="form-error"></div>
+                        <div class="success-banner" id="form-success"></div>
+
+                        <form id="invoice-form">
+                            <!-- Row 1: Customer Details -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="bill-name">Customer Name *</label>
+                                    <input type="text" id="bill-name" required placeholder="e.g. Rahul Sharma">
+                                </div>
+                                <div class="form-group">
+                                    <label for="bill-phone">Phone Number *</label>
+                                    <input type="tel" id="bill-phone" required placeholder="10-digit mobile number" pattern="[0-9]{10}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="bill-email">Email Address</label>
+                                    <input type="email" id="bill-email" placeholder="e.g. customer@gmail.com">
+                                </div>
+                            </div>
+
+                            <!-- Row 2: Appliance & Service -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="bill-machine">Machine Type *</label>
+                                    <select id="bill-machine" required>
+                                        <option value="" disabled selected>Select Appliance</option>
+                                        <option value="AC">AC</option>
+                                        <option value="Refrigerator">Refrigerator</option>
+                                        <option value="Washing Machine">Washing Machine</option>
+                                        <option value="Microwave">Microwave</option>
+                                        <option value="Water Cooler">Water Cooler</option>
+                                        <option value="RO System">RO System</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bill-service">Service Type *</label>
+                                    <select id="bill-service" required>
+                                        <option value="" disabled selected>Select Service Type</option>
+                                        <option value="Basic Service">Basic Service</option>
+                                        <option value="Repair">Repair</option>
+                                        <option value="Installation">Installation</option>
+                                        <option value="Gas Filling">Gas Filling</option>
+                                        <option value="Maintenance">Maintenance</option>
+                                        <option value="Other">Other (Write below)</option>
+                                    </select>
+                                    <div class="custom-service-group" id="custom-service-group">
+                                        <input type="text" id="bill-service-custom" placeholder="Specify custom service...">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bill-date">Service Date *</label>
+                                    <input type="date" id="bill-date" required>
+                                </div>
+                            </div>
+
+                            <!-- Row 3: Repair Information -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="bill-desc">Repair Description</label>
+                                    <textarea id="bill-desc" rows="3" placeholder="Describe the work done..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bill-parts">Parts Used</label>
+                                    <textarea id="bill-parts" rows="3" placeholder="Parts replaced (e.g. capacitor, fan motor)..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Row 4: Pricing & Tech -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="bill-amount">Amount (₹) *</label>
+                                    <input type="number" id="bill-amount" min="0" required placeholder="Enter service charges">
+                                </div>
+                                <div class="form-group">
+                                    <label for="bill-method">Payment Method *</label>
+                                    <select id="bill-method" required>
+                                        <option value="Cash" selected>Cash</option>
+                                        <option value="UPI">UPI / GPay / PhonePe</option>
+                                        <option value="Card">Credit / Debit Card</option>
+                                        <option value="Net Banking">Net Banking</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bill-status">Payment Status *</label>
+                                    <select id="bill-status" required>
+                                        <option value="Paid" selected>Paid</option>
+                                        <option value="Pending">Pending</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bill-tech">Technician Name</label>
+                                    <input type="text" id="bill-tech" placeholder="Name of service engineer">
+                                </div>
+                            </div>
+
+                            <!-- Row 5: Notes & Delivery Preferences -->
+                            <div class="form-row" style="grid-template-columns: 1fr;">
+                                <div class="form-group">
+                                    <label for="bill-notes">Additional Notes</label>
+                                    <textarea id="bill-notes" rows="2" placeholder="Any warranty notes or remarks..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Delivery actions options -->
+                            <div class="delivery-preferences">
+                                <span class="delivery-label">Choose Delivery Methods:</span>
+                                <div class="delivery-options-grid">
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" id="send-whatsapp" checked>
+                                        <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> Send via WhatsApp
+                                    </label>
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" id="send-email">
+                                        <i class="fa-solid fa-envelope" style="color: #0d47a1;"></i> Send via Email
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-full mt-4" id="generate-submit-btn" style="padding: 16px 28px;">
+                                <span class="btn-text"><i class="fa-solid fa-file-invoice"></i> Generate PDF & Send Invoice</span>
+                                <div class="spinner d-none" id="generate-spinner"></div>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- History Tab -->
+                <div class="tab-content" id="history-tab">
+                    <div class="history-controls">
+                        <div class="search-box">
+                            <input type="text" id="history-search" placeholder="Search by name, phone or appliance...">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <div>
+                            <strong class="text-highlight" id="history-count">Total: 0 Invoices</strong>
+                        </div>
+                    </div>
+
+                    <div class="history-table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Customer Details</th>
+                                    <th>Job Details</th>
+                                    <th>Amount</th>
+                                    <th>Payment</th>
+                                    <th style="text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-table-body">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted" style="padding: 40px;">
+                                        <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                        <p>Loading invoice records...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p>&copy; 2026 Advanced AC Repair & Home Services. Administrator Console.</p>
+        </div>
+    </footer>
+
+    <!-- jsPDF libraries via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- Admin JS code -->
+    <script src="admin.js"></script>
+</body>
+</html>

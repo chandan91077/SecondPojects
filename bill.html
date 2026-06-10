@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Invoice | Advanced AC Repair</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome setup -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Core CSS (for navbar and variables) -->
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .bill-main {
+            padding-top: 100px;
+            padding-bottom: 60px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .invoice-viewer-card {
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(13, 71, 161, 0.06);
+            padding: 40px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            text-align: left;
+            position: relative;
+        }
+
+        .invoice-header {
+            border-bottom: 2px solid #e1f5fe;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .invoice-title {
+            color: var(--deep-navy);
+            font-weight: 800;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .invoice-meta {
+            text-align: right;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .status-badge.paid { background: #dcfce7; color: #15803d; }
+        .status-badge.pending { background: #fee2e2; color: #b91c1c; }
+
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--deep-navy);
+            margin: 20px 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(13, 71, 161, 0.1);
+            padding-bottom: 5px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            font-size: 0.95rem;
+        }
+
+        .info-item span {
+            color: var(--text-muted);
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .info-item strong {
+            color: var(--text-dark);
+        }
+
+        .description-box {
+            background: rgba(13, 71, 161, 0.03);
+            border-left: 3px solid var(--accent-cyan);
+            padding: 15px;
+            border-radius: 0 10px 10px 0;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        .amount-summary-box {
+            background: var(--deep-navy);
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .amount-label {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .amount-val {
+            font-size: 1.6rem;
+            font-weight: 800;
+        }
+
+        .download-action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(13, 71, 161, 0.2);
+            cursor: pointer;
+        }
+
+        .spinner-container {
+            text-align: center;
+            padding: 60px 0;
+        }
+
+        .error-container {
+            text-align: center;
+            padding: 40px 20px;
+            color: #b91c1c;
+        }
+
+        .error-container i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .invoice-viewer-card {
+                padding: 24px;
+                margin: 10px;
+            }
+            .invoice-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .invoice-meta {
+                text-align: left;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="navbar glass">
+        <div class="container nav-container">
+            <a href="https://advancedac.in/" class="logo">
+                <img src="favicon.svg" alt="Advanced AC Logo" class="logo-img"> Advanced AC
+            </a>
+            <div class="nav-actions">
+                <a href="tel:+919005341723" class="phone-link"><i class="fa-solid fa-phone"></i> <span>9005 341 723</span></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="bill-main">
+        <div class="container">
+            <div class="invoice-viewer-card">
+                
+                <!-- loading state spinner -->
+                <div class="spinner-container" id="loading-spinner">
+                    <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--deep-navy); margin-bottom: 15px;"></i>
+                    <p style="font-weight: 600; color: var(--deep-navy);">Fetching Invoice details...</p>
+                </div>
+
+                <!-- Error state banner -->
+                <div class="error-container d-none" id="error-box">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <h3>Invoice Not Found</h3>
+                    <p style="margin: 10px 0 20px 0; color: var(--text-muted);">The requested invoice link is invalid, expired, or has been removed.</p>
+                    <a href="https://advancedac.in/" class="btn btn-outline">Back to Homepage</a>
+                </div>
+
+                <!-- Invoice Content Area -->
+                <div class="d-none" id="invoice-content">
+                    <div class="invoice-header">
+                        <div>
+                            <h2 class="invoice-title">Repair Invoice</h2>
+                            <span style="font-size:0.85rem; color:var(--text-muted);">Website: <a href="https://advancedac.in/" style="color:var(--deep-navy); font-weight:600;">https://advancedac.in/</a></span>
+                        </div>
+                        <div class="invoice-meta">
+                            <div id="invoice-id-lbl">Invoice ID: #N/A</div>
+                            <div id="invoice-date-lbl">Date: N/A</div>
+                            <div id="invoice-badge-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="section-title">Customer Information</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span>Name</span>
+                            <strong id="cust-name">N/A</strong>
+                        </div>
+                        <div class="info-item">
+                            <span>Phone</span>
+                            <strong id="cust-phone">N/A</strong>
+                        </div>
+                        <div class="info-item">
+                            <span>Email</span>
+                            <strong id="cust-email">N/A</strong>
+                        </div>
+                    </div>
+
+                    <div class="section-title">Service details</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span>Machine Type</span>
+                            <strong id="job-machine">N/A</strong>
+                        </div>
+                        <div class="info-item">
+                            <span>Service Provided</span>
+                            <strong id="job-service">N/A</strong>
+                        </div>
+                        <div class="info-item">
+                            <span>Technician</span>
+                            <strong id="job-tech">N/A</strong>
+                        </div>
+                    </div>
+
+                    <div class="section-title">Job Description & notes</div>
+                    <div class="description-box">
+                        <div style="margin-bottom:8px;"><strong>Repair Description:</strong> <span id="job-desc">N/A</span></div>
+                        <div style="margin-bottom:8px;"><strong>Replacement Parts:</strong> <span id="job-parts">N/A</span></div>
+                        <div id="invoice-notes-block" style="display:none; font-style:italic; border-top: 1px dashed rgba(0,0,0,0.1); padding-top: 8px; margin-top:8px;">
+                            <strong>Note:</strong> <span id="job-notes"></span>
+                        </div>
+                    </div>
+
+                    <div class="amount-summary-box">
+                        <div>
+                            <span class="amount-label">Grand Total (Paid via <span id="payment-method-lbl">Cash</span>)</span>
+                        </div>
+                        <div class="amount-val" id="amount-lbl">₹ 0</div>
+                    </div>
+
+                    <button class="btn btn-primary download-action-btn" id="pdf-download-btn">
+                        <i class="fa-solid fa-file-arrow-down"></i> Download PDF Invoice
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p>&copy; 2026 Advanced AC Repair & Home Services. Thank you for your business!</p>
+        </div>
+    </footer>
+
+    <!-- jsPDF libraries via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const errorBox = document.getElementById('error-box');
+            const invoiceContent = document.getElementById('invoice-content');
+            const pdfDownloadBtn = document.getElementById('pdf-download-btn');
+
+            // Get id from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const billId = urlParams.get('id');
+
+            if (!billId) {
+                showError();
+                return;
+            }
+
+            let bill = null;
+
+            try {
+                // Fetch bill details from public endpoint
+                const response = await fetch(`/api/public/bill?id=${billId}`);
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    bill = data.bill;
+                }
+            } catch (err) {
+                console.warn('Network fetch failed. Checking local storage fallback...');
+            }
+
+            // Fallback to localStorage if server database is unreachable (essential for offline/local testing)
+            if (!bill) {
+                try {
+                    const cached = JSON.parse(localStorage.getItem('cachedBills') || '[]');
+                    bill = cached.find(b => b._id === billId);
+                } catch (e) {
+                    console.error('LocalStorage fetch error:', e);
+                }
+            }
+
+            if (!bill) {
+                showError();
+                return;
+            }
+
+            // Render details
+            document.getElementById('cust-name').textContent = bill.customerName;
+            document.getElementById('cust-phone').textContent = bill.customerPhone;
+            document.getElementById('cust-email').textContent = bill.customerEmail || 'No Email Provided';
+            
+            document.getElementById('job-machine').textContent = bill.machineType;
+            document.getElementById('job-service').textContent = bill.serviceType;
+            document.getElementById('job-tech').textContent = bill.technicianName || 'Certified Engineer';
+            
+            document.getElementById('job-desc').textContent = bill.repairDescription || 'Standard checkup & diagnostics.';
+            document.getElementById('job-parts').textContent = bill.partsUsed || 'No replacements.';
+            
+            if (bill.notes) {
+                document.getElementById('job-notes').textContent = bill.notes;
+                document.getElementById('invoice-notes-block').style.display = 'block';
+            }
+
+            document.getElementById('payment-method-lbl').textContent = bill.paymentMethod;
+            document.getElementById('amount-lbl').textContent = '₹ ' + parseFloat(bill.amount).toLocaleString('en-IN');
+
+            const shortId = billId.length > 8 ? billId.slice(-8).toUpperCase() : billId.toUpperCase();
+            document.getElementById('invoice-id-lbl').textContent = 'Invoice ID: #' + shortId;
+            document.getElementById('invoice-date-lbl').textContent = 'Date: ' + bill.serviceDate;
+
+            const badgeContainer = document.getElementById('invoice-badge-container');
+            const statusClass = bill.paymentStatus === 'Paid' ? 'paid' : 'pending';
+            badgeContainer.innerHTML = `<span class="status-badge ${statusClass}">${bill.paymentStatus}</span>`;
+
+            // Display invoice container
+            loadingSpinner.classList.add('d-none');
+            invoiceContent.classList.remove('d-none');
+
+            // Download PDF Invoice trigger
+            pdfDownloadBtn.addEventListener('click', () => {
+                generatePDFInvoice(bill, billId);
+            });
+
+            function showError() {
+                loadingSpinner.classList.add('d-none');
+                errorBox.classList.remove('d-none');
+            }
+
+            // PDF drawing function matching admin.js exactly
+            function generatePDFInvoice(billData, id) {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                const primaryColor = [13, 71, 161]; // Deep navy
+
+                // Company Header
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(22);
+                doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+                doc.text("Advanced AC Repair & Services", 14, 20);
+
+                doc.setFontSize(9);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(100, 100, 100);
+                doc.text("Surat, Gujarat, India | Phone: +91 9005341723 | Email: yadavbrahamdev635@gmail.com | Web: https://advancedac.in/", 14, 26);
+
+                // Separator line
+                doc.setDrawColor(200, 200, 200);
+                doc.line(14, 30, 196, 30);
+
+                // Customer Info Column
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(11);
+                doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+                doc.text("INVOICE TO:", 14, 40);
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.setTextColor(40, 40, 40);
+                doc.text(`Customer Name: ${billData.customerName}`, 14, 46);
+                doc.text(`Phone Number:  ${billData.customerPhone}`, 14, 52);
+                doc.text(`Email Address: ${billData.customerEmail || 'N/A'}`, 14, 58);
+
+                // Invoice Details Column (Right side)
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(11);
+                doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+                doc.text("INVOICE SUMMARY:", 120, 40);
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.setTextColor(40, 40, 40);
+                const displayId = id.length > 8 ? id.slice(-8).toUpperCase() : id.toUpperCase();
+                doc.text(`Invoice ID:   #${displayId}`, 120, 46);
+                doc.text(`Service Date: ${billData.serviceDate}`, 120, 52);
+                const createdStr = billData.createdAt ? new Date(billData.createdAt).toLocaleDateString('en-IN') : new Date().toLocaleDateString('en-IN');
+                doc.text(`Issued Date:  ${createdStr}`, 120, 58);
+
+                // Table
+                doc.autoTable({
+                    startY: 66,
+                    head: [['Job Detail Parameter', 'Service Specification Details']],
+                    body: [
+                        ['Machine / Appliance Type', billData.machineType],
+                        ['Service Categories', billData.serviceType],
+                        ['Repair Job Description', billData.repairDescription || 'Regular diagnostic inspection and general checkup.'],
+                        ['Parts & Consumables Replaced', billData.partsUsed || 'No replacement parts required.'],
+                        ['Technician / Engineer Assigned', billData.technicianName || 'Certified Engineer']
+                    ],
+                    theme: 'striped',
+                    headStyles: { 
+                        fillColor: primaryColor,
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold',
+                        fontSize: 10
+                    },
+                    bodyStyles: {
+                        fontSize: 9.5,
+                        textColor: [50, 50, 50]
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 55, fontStyle: 'bold' }
+                    }
+                });
+
+                const finalY = doc.lastAutoTable.finalY + 12;
+
+                // Billing Summary
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(11);
+                doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+                doc.text("TRANSACTION:", 14, finalY);
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(9.5);
+                doc.setTextColor(45, 45, 45);
+                doc.text(`Method of Payment: ${billData.paymentMethod}`, 14, finalY + 6);
+                doc.text(`Transaction Status: ${billData.paymentStatus.toUpperCase()}`, 14, finalY + 12);
+
+                // Grand Total Box
+                doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+                doc.rect(115, finalY - 4, 81, 20, 'F');
+
+                doc.setTextColor(255, 255, 255);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(10);
+                doc.text("TOTAL AMOUNT:", 119, finalY + 2);
+                doc.setFontSize(13);
+                doc.text(`Rs. ${parseFloat(billData.amount).toLocaleString('en-IN')}/-`, 119, finalY + 10);
+
+                // Notes
+                let noteY = finalY + 24;
+                if (billData.notes) {
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(9);
+                    doc.setTextColor(80, 80, 80);
+                    doc.text("SPECIAL NOTE / WARRANTY REMARKS:", 14, noteY);
+                    
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(8.5);
+                    doc.setTextColor(110, 110, 110);
+                    doc.text(billData.notes, 14, noteY + 5);
+                    noteY += 12;
+                }
+
+                // Footer
+                doc.setDrawColor(230, 230, 230);
+                doc.line(14, noteY + 5, 196, noteY + 5);
+
+                doc.setFont("helvetica", "italic");
+                doc.setFontSize(8.5);
+                doc.setTextColor(150, 150, 150);
+                doc.text("This is an electronically generated invoices. Thank you for choosing Advanced AC Repair Services!", 14, noteY + 11);
+
+                const safeName = billData.customerName.replace(/\s+/g, '_');
+                doc.save(`Invoice_${safeName}.pdf`);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,9 +1,11 @@
 {
   "version": 2,
+  "cleanUrls": true,
   "functions": {
-    "api/contact.js": {
+    "api/**/*.js": {
       "memory": 256,
       "maxDuration": 10
     }
   }
 }
+
