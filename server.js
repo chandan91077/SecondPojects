@@ -9,7 +9,7 @@ const contactHandler = require('./api/contact');
 const adminLoginHandler = require('./api/admin/login');
 const adminBillsHandler = require('./api/admin/bills');
 const adminSendEmailHandler = require('./api/admin/send-bill-email');
-const publicBillHandler = require('./api/public-bill');
+const publicBillHandler = require('./api/public/bill');
 const port = process.env.PORT || 3000;
 
 const isAllowedOrigin = (origin) => {

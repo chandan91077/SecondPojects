@@ -1,5 +1,5 @@
 const { ObjectId } = require('mongodb');
-const { getDb } = require('./_db');
+const { getDb } = require('../_db');
 
 module.exports = async function handler(req, res) {
   // CORS Headers
